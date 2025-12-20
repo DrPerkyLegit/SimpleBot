@@ -108,6 +108,8 @@ export class ModuleManager extends EventEmitter {
     }
 
     private findAllModules(modulesPath: string): any[] {
+        if (fs.existsSync(modulesPath) === false) return []; //fix for missing folder
+
         return fs.readdirSync(modulesPath, { withFileTypes: true })
         .filter(e => e.isDirectory())
         .map(e => {
