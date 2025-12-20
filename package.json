@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "minecraft-data": "^3.101.0",
+    "mineflayer": "^4.33.0",
+    "tsx": "^4.21.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.0.3"
+  }
+}

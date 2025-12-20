@@ -1,0 +1,28 @@
+{
+  "address": "refinedvanilla.net",
+  "port": "25565",
+  "accounts": [
+    {
+      "ProfileName": "DefaultProfile",
+      "CommandPrefix": "*",
+      "Modules": [
+        "DefaultModule",
+        "StasisModule"
+      ]
+    }
+  ],
+  "__accountExamples": [
+    {
+      "__comment": "no commands, just afk",
+      "ProfileName": "DefaultProfile"
+    },
+    {
+      "__comment": "default set of commands",
+      "ProfileName": "DefaultProfile",
+      "CommandPrefix": "*",
+      "Modules": [
+        "DefaultModule"
+      ]
+    }
+  ]
+}
