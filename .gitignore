@@ -1,2 +1,3 @@
 /node_modules
 /modules/private/*
+/resources/config.json

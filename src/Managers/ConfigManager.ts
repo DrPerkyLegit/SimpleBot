@@ -34,8 +34,24 @@ export class ConfigManager {
     }
 
     loadFromFile() {
+        const configPath = path.join(__dirname, "../../", "resources", this.moduleName, "config.json");
+
+        if (!fs.existsSync(configPath)) {
+            Logger.Warning(`Config File Not Found For Module: ${this.moduleName}, Attempting To Create New One`);
+
+            const defaultCondigPath = path.join(__dirname, "../../", "resources", this.moduleName, "default_config.json");
+            if (!fs.existsSync(defaultCondigPath)) {
+                Logger.Error(`Default Config File Not Found For Module: ${this.moduleName}, Unable To Create New One`);
+                this.LoadedConfig = {}
+                return;
+            }
+            this.LoadedConfig = JSON.parse(fs.readFileSync(defaultCondigPath, "utf8"))
+            this.saveToFile()
+            return;
+        }
+
         try {
-            var fileContents = fs.readFileSync(path.join(__dirname, "../../", "resources", this.moduleName, "config.json"), "utf8")
+            var fileContents = fs.readFileSync(configPath, "utf8")
             this.LoadedConfig = JSON.parse(fileContents);
         } catch (exception) {
             Logger.Error("Unable To Load Config From File: ", exception)

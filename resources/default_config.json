@@ -6,8 +6,7 @@
       "ProfileName": "DefaultProfile",
       "CommandPrefix": "*",
       "Modules": [
-        "DefaultModule",
-        "ChestStasisModule"
+        "DefaultModule"
       ]
     }
   ],
