@@ -1,2 +1,2 @@
 requirements:
-nodejs 21.x.x (development version)
+nodejs 24.x.x (development version)
