@@ -7,6 +7,7 @@ import { Logger } from "../Utils/Logger"
 import { ConfigManager } from "./ConfigManager";
 import { ModuleManager } from "./ModuleManager";
 import { Command } from "../Types/Command";
+import { Event } from "../Types/Events/Event";
 
 export class GameAccount {
     public client: mineflayer.Bot | undefined;
@@ -23,10 +24,13 @@ export class GameAccount {
             username: this.config.user.ProfileName,
             host: this.config.host,
             port: this.config.port,
-            auth: "microsoft"
+            auth: "microsoft",
+            hideErrors: true, //disabled for production to prevent PartialReadError spam
         })
 
         this.alreadyReconnecting = false;
+
+        this.Modules.emit("custom_event", new Event("newBotInstance", { account: this }, false));
 
         this.client.on("login", () => {
             Logger.Info("[", this.config.user.ProfileName, "] ", "Connected To Server");

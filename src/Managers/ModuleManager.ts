@@ -72,7 +72,7 @@ export class ModuleManager extends EventEmitter {
 
                         const LoadedModuleInstance = new LoadedModuleClass(key, this.getModuleAPI());
 
-                        this.ModuleAPIInstance.emit("module_registered", LoadedModuleInstance, value.config) //this line was made by me
+                        this.ModuleAPIInstance.emit("module_registered", LoadedModuleInstance, value) //this line was made by me
 
                         this.EnabledModules.push(LoadedModuleInstance)
 

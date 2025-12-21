@@ -2,11 +2,12 @@ import fs from "fs";
 import path from "path";
 
 import { Logger } from "../Utils/Logger"
+import Module from "module";
 
 export class ConfigManager {
     private LoadedConfig: any;
 
-    constructor(public moduleName: string) {
+    constructor(public moduleName: string, public modulePath: string) {
         this.loadFromFile();
     }
 
@@ -27,7 +28,12 @@ export class ConfigManager {
 
     saveToFile() {
         try {
-            fs.writeFileSync(path.join(__dirname, "../../", "resources", this.moduleName, "config.json"), JSON.stringify(this.LoadedConfig, null, 2), "utf8")
+            let resourcesPath = path.join(__dirname, "../../", "resources", this.moduleName);
+            if (!fs.existsSync(resourcesPath)) {
+                fs.mkdirSync(resourcesPath);
+            }
+
+            fs.writeFileSync(path.join(resourcesPath, "config.json"), JSON.stringify(this.LoadedConfig, null, 2), "utf8")
         } catch (exception) {
             Logger.Warning("Unable To Save Config To File: ", exception)
         }
@@ -39,13 +45,18 @@ export class ConfigManager {
         if (!fs.existsSync(configPath)) {
             Logger.Warning(`Config File Not Found For Module: ${this.moduleName}, Attempting To Create New One`);
 
-            const defaultCondigPath = path.join(__dirname, "../../", "resources", this.moduleName, "default_config.json");
-            if (!fs.existsSync(defaultCondigPath)) {
+            let defaultConfigPath = path.join(__dirname, "../../", "resources", "default_config.json");
+
+            if (this.moduleName.length > 0) {
+                defaultConfigPath = path.join(this.modulePath, "resources", "default_config.json");
+            }
+
+            if (!fs.existsSync(defaultConfigPath)) {
                 Logger.Error(`Default Config File Not Found For Module: ${this.moduleName}, Unable To Create New One`);
                 this.LoadedConfig = {}
                 return;
             }
-            this.LoadedConfig = JSON.parse(fs.readFileSync(defaultCondigPath, "utf8"))
+            this.LoadedConfig = JSON.parse(fs.readFileSync(defaultConfigPath, "utf8"))
             this.saveToFile()
             return;
         }

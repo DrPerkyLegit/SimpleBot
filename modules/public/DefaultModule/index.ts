@@ -2,7 +2,7 @@ import { ModuleAPI } from "../../../src/Managers/ModuleAPI";
 import { ModuleManager } from "../../../src/Managers/ModuleManager";
 import { Event } from "../../../src/Types/Events/Event";
 import { Module } from "../../../src/Types/Module";
-import { ExampleCommand } from "./commands/ExampleCommand";
+import { HelpCommand } from "./commands/HelpCommand";
 
 export class DefaultModule extends Module {
     public constructor(public name: string, public moduleAPI: ModuleAPI) {
@@ -10,7 +10,7 @@ export class DefaultModule extends Module {
     }
 
     public onEnable(): void {
-        this.moduleAPI.registerCommand(this, new ExampleCommand())
+        this.moduleAPI.registerCommand(this, new HelpCommand(this.moduleAPI))
     }
 
     public onDisable(): void {

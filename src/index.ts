@@ -6,7 +6,7 @@ import { AccountManager } from "./Managers/AccountManager";
 import { ModuleManager } from "./Managers/ModuleManager";
 import { Logger } from "./Utils/Logger";
 
-const ConfigManagerInstance = new ConfigManager(""); //no name for no module folder config
+const ConfigManagerInstance = new ConfigManager("", ""); //no name for no module folder config
 const ModuleManagerInstance = new ModuleManager();
 
 let shuttingDown = false;
