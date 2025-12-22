@@ -29,37 +29,51 @@ export class StasisCommand extends Command {
                 return;
             }
 
-            const stasisItem = StasisCommand.findStasisItem(botAccount, username);
+            const openedChest = await botAccount.client.openContainer(foundChest);
 
-            if (!stasisItem) {
-                botAccount.client.whisper(username, "No stasis item found");
-                return;
+            try {
+                const stasisItem = StasisCommand.findStasisItem(openedChest, username);
+
+                if (!stasisItem) {
+                    botAccount.client.whisper(username, "No stasis item found");
+                    return;
+                }
+
+                await botAccount.client.transfer({
+                    window: openedChest,
+                    itemType: stasisItem.type,
+                    metadata: stasisItem.metadata,
+                    count: 1,
+                    sourceStart: stasisItem.slot-1,
+                    sourceEnd: stasisItem.slot+1,
+                    destStart: 0,
+                    destEnd: openedChest.inventoryStart,
+                })
+
+                botAccount.client.whisper(username, "Stasis item deposited into chest");
+            } catch (err) {}
+            finally {
+                openedChest.close();
             }
-
-            const openedChest = await botAccount.client.openChest(foundChest)
-
-            await openedChest.deposit(stasisItem.type, stasisItem.metadata, 1);
-        
-            openedChest.close();
-
-            botAccount.client.whisper(username, "Stasis item deposited into chest");
-        
         })();
     }
 
-    static findStasisItem(botAccount: GameAccount, username: string) {
-        if (botAccount.client == undefined) return null;
+    static findStasisItem(currentWindow: any, username: string) {
 
-        const inventoryItems = botAccount.client.inventory.items();
+        const inventoryItems = currentWindow.items();
 
         for (let i = 0; i < inventoryItems.length; i++) {
             const item = inventoryItems[i];
+            //console.log(item)
 
             if (item.name != "paper")
                 continue;
 
             //ignore the error about components not being a property of item, it is
             for (let component of item.components) {
+                if (!component || !component.type)
+                    continue;
+
                 if (component.type == "custom_name") {
                     if (component.data.value == username) {
                         return item;
