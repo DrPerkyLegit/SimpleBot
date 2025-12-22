@@ -1,0 +1,15 @@
+{
+  "discord_webhook": {
+    "url": "https://discord.com/api/webhooks/1452805883309457512/gz-CoBTfpgUGUBhvvXhlQPgnH7dZoPB_vo5A0_zEdOWU6VhYxrTpnL5o5pRIl4zDjbxw",
+    "username": "SimpleBot",
+    "avatar_url": "https://simplebot.org/assets/sb-logo.png",
+    "__comment": "this url isnt mine its just also named simplebot"
+  },
+  "seenPlayers": [
+    [
+      "ezfo",
+      "Mon, 22 Dec 2025 23:41:08 GMT"
+    ]
+  ],
+  "expectedPlayers": []
+}

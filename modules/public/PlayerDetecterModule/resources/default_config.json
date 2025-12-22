@@ -1,0 +1,10 @@
+{
+    "discord_webhook": {
+        "url": "your-webhook-url-here",
+        "username": "SimpleBot",
+        "avatar_url": "https://simplebot.org/assets/sb-logo.png",
+        "__comment": "this url isnt mine its just also named simplebot"
+    },
+    "seenPlayers": [],
+    "expectedPlayers": [ "ExpectedPlayerName" ]
+}

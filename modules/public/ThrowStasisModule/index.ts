@@ -4,7 +4,7 @@ import { Event } from "../../../src/Types/Events/Event";
 import { Module } from "../../../src/Types/Module";
 import { StasisCommand } from "./commands/StasisCommand";
 
-export class StasisModule extends Module {
+export class ThrowStasisModule extends Module {
     public constructor(public name: string, public moduleAPI: ModuleAPI) {
         super(name, moduleAPI)
     }
