@@ -14,8 +14,13 @@ export class GameAccount {
 
     private alreadyReconnecting: boolean;
 
+    private lastCommandExecuteTime: number;
+    private queuedCommands: Map<string, any>;
+
     constructor(private Modules: ModuleManager, private config: any) {
         this.alreadyReconnecting = false;
+        this.lastCommandExecuteTime = 0;
+        this.queuedCommands = new Map<string, any>();
         this.createBot();
     }
 
@@ -31,6 +36,10 @@ export class GameAccount {
         this.alreadyReconnecting = false;
 
         this.Modules.emit("custom_event", new Event("newBotInstance", { account: this }, false));
+
+        this.client.on("physicsTick", () => {
+            this.handleQueuedCommands();
+        })
 
         this.client.on("login", () => {
             Logger.Info("[", this.config.user.ProfileName, "] ", "Connected To Server");
@@ -61,10 +70,39 @@ export class GameAccount {
         })
     }
 
+    private handleQueuedCommands() {
+        if (!this.client) return;
+
+        if (this.queuedCommands.size <= 0) return;
+        if (this.lastCommandExecuteTime > Date.now() - 3000) return;
+
+        const nextCommand = this.queuedCommands.entries().next();
+
+        if (nextCommand.done) return;
+
+        nextCommand.value[1]();
+        this.queuedCommands.delete(nextCommand.value[0]);
+
+        let queueIndex = 0;
+        this.queuedCommands.forEach((command, username) => {
+            queueIndex++;
+
+            if (this.client) this.client.whisper(username, `New Command Queue Position: ${queueIndex}`);
+        })
+    }
+
     private handleMessage(username: string, message: string, isPrivate: boolean) {
         if (!this.client) return;
         if (!this.config.user.CommandPrefix) return;
+
+        if (AccountManager.BlacklistedPlayers.has(username)) return;
+
         if (!message.startsWith(this.config.user.CommandPrefix) && !isPrivate) return;
+
+        if (this.queuedCommands.has(username)) {
+            this.client.whisper(username, "You are already in a queue for a command");
+            return;
+        }
 
         var messageToParse = message;
 
@@ -85,14 +123,21 @@ export class GameAccount {
                 this.client.whisper(username, `Unknown command: ${commandName}`);
             }
 
-            console.log(`Unknown command: ${commandName}`);
+            //console.log(`Unknown command: ${commandName}`);
+            Logger.Info(`Unknown command: ${commandName} From ${username}`);
             return;
         }
 
         if (command.getWhitelistedPlayers() != undefined && !command.getWhitelistedPlayers()?.includes(username)) {
             this.client.whisper(username, `No Permission On Whitelisted Command`);
         } else {
-            command.onCommandExecute(this, username, args, isPrivate);
+            if (this.queuedCommands.size >= 1) {
+                this.client.whisper(username, `Command In Queue: ${this.queuedCommands.size + 1}`);
+            }
+            this.queuedCommands.set(username, () => {
+                command.onCommandExecute(this, username, args, isPrivate);
+                this.lastCommandExecuteTime = Date.now();
+            });
         }
     }
 
@@ -109,6 +154,8 @@ export class GameAccount {
 
 export class AccountManager {
     private JavaAccounts: GameAccount[] = [];
+
+    public static BlacklistedPlayers: Set<string> = new Set();
 
     private ServerHost: string;
     private ServerPort: number;
@@ -155,6 +202,10 @@ export class AccountManager {
         });
 
         Logger.Info("Finished Loading Config For ", accountsToConnect.length, " Accounts")
+
+        AccountManager.BlacklistedPlayers = new Set<string>(Config.getValue("blacklistedPlayers", []));
+
+        Logger.Info("Loaded Blacklisted Players: ", AccountManager.BlacklistedPlayers.size)
 
         Modules.emit("ready", usedModuleNames)
 
