@@ -63,10 +63,6 @@ export class StasisCommand extends Command {
 
         for (let i = 0; i < inventoryItems.length; i++) {
             const item = inventoryItems[i];
-            //console.log(item)
-
-            if (item.name != "paper")
-                continue;
 
             //ignore the error about components not being a property of item, it is
             for (let component of item.components) {
