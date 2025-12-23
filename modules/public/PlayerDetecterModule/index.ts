@@ -89,11 +89,17 @@ export class PlayerDetecterModule extends Module {
             return;
         }
 
-        axios.post(this.discordWebhookURL, {
-            content: message,
-            username: this.discordWebhookUsername,
-            avatar_url: this.discordWebhookAvatar
-        })
+        try {
+            axios.post(this.discordWebhookURL, {
+                content: message,
+                username: this.discordWebhookUsername,
+                avatar_url: this.discordWebhookAvatar
+            })
+        } catch (error) {
+            //added this to prevent crash on bad webhook call
+            this.Logger.Error("Failed To Send Webhook Message: ", error);
+        }
+        
     }
     
 }
